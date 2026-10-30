@@ -32,6 +32,7 @@ html{color-scheme:light}
   --scrim:rgba(0,0,0,.7); color-scheme:dark}
 
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:14px;line-height:20px;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
 .wrap{max-width:640px;margin:0 auto}
@@ -240,7 +241,7 @@ textarea:focus{border-color:var(--blue);outline:none}
 <div class="toast" id="toast" hidden></div>
 
 
-<script src="config.js?v=2"></script>
+<script src="config.js?v=3"></script>
 <script>
 const API = window.REVIEWS_API;
 const STAR_PATH = 'M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z';
