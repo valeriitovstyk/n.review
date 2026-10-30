@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Відгуки про тата</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+<style>
+html{color-scheme:light}
+/* Layout: one centered column like a maps place panel — summary card, toolbar, review list, modal composer */
+:root{
+  --bg:#ffffff; --surface:#ffffff; --surface-2:#f1f3f4; --line:#dadce0;
+  --fg:#202124; --fg-2:#5f6368; --fg-3:#70757a;
+  --blue:#1a73e8; --blue-bg:#e8f0fe; --star:#fbbc04; --star-off:#dadce0;
+  --bar:#fbbc04; --bar-bg:#e8eaed; --shadow:0 1px 2px rgba(60,64,67,.3),0 2px 6px 2px rgba(60,64,67,.15);
+  --scrim:rgba(32,33,36,.6);
+  --font:"Roboto",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#202124; --surface:#292a2d; --surface-2:#35363a; --line:#3c4043;
+  --fg:#e8eaed; --fg-2:#bdc1c6; --fg-3:#9aa0a6;
+  --blue:#8ab4f8; --blue-bg:#2b3a55; --star:#fdd663; --star-off:#5f6368;
+  --bar:#fdd663; --bar-bg:#3c4043; --shadow:0 1px 3px rgba(0,0,0,.5),0 4px 8px 3px rgba(0,0,0,.3);
+  --scrim:rgba(0,0,0,.7); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#202124; --surface:#292a2d; --surface-2:#35363a; --line:#3c4043;
+  --fg:#e8eaed; --fg-2:#bdc1c6; --fg-3:#9aa0a6;
+  --blue:#8ab4f8; --blue-bg:#2b3a55; --star:#fdd663; --star-off:#5f6368;
+  --bar:#fdd663; --bar-bg:#3c4043; --shadow:0 1px 3px rgba(0,0,0,.5),0 4px 8px 3px rgba(0,0,0,.3);
+  --scrim:rgba(0,0,0,.7); color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:14px;line-height:20px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:640px;margin:0 auto}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+/* place header */
+.place{display:flex;gap:16px;align-items:flex-start;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.place-photo{width:72px;height:72px;border-radius:8px;flex:none;display:grid;place-items:center;
+  background:linear-gradient(135deg,#4285f4,#34a853);color:#fff;font-size:34px;font-weight:500}
+.place h1{font-size:22px;line-height:28px;font-weight:400;margin:0 0 2px;text-wrap:balance}
+.place .sub{color:var(--fg-2);display:flex;flex-wrap:wrap;align-items:center;gap:4px}
+.place .sub .num{color:var(--fg)}
+.place .cat{color:var(--fg-2);margin-top:2px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:20px;overflow-x:auto}
+.tab{background:none;border:0;padding:14px 16px 12px;color:var(--fg-2);font-weight:500;border-bottom:3px solid transparent;white-space:nowrap}
+.tab.on{color:var(--blue);border-bottom-color:var(--blue)}
+
+/* summary */
+.summary{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;margin-bottom:20px}
+.bars{display:grid;gap:4px;min-width:0}
+.barrow{display:grid;grid-template-columns:10px 1fr;gap:10px;align-items:center;color:var(--fg-2);font-size:12px;background:none;border:0;padding:0;text-align:left}
+.bartrack{height:10px;border-radius:5px;background:var(--bar-bg);overflow:hidden}
+.barfill{height:100%;background:var(--bar);border-radius:5px;transition:width .4s}
+.score{text-align:center;min-width:110px}
+.score .big{font-size:56px;line-height:60px;font-weight:400;font-variant-numeric:tabular-nums}
+.score .cnt{color:var(--fg-2);font-size:13px;margin-top:4px}
+
+.stars{display:inline-flex;gap:1px;vertical-align:middle}
+.stars svg{width:14px;height:14px}
+.stars.lg svg{width:18px;height:18px}
+
+.write-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.btn-outline{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);color:var(--blue);
+  border-radius:18px;height:36px;padding:0 16px;font-weight:500}
+.btn-outline:hover{background:var(--blue-bg)}
+.btn-outline svg{width:18px;height:18px;fill:currentColor}
+
+/* toolbar */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;height:32px;padding:0 12px;font-size:14px;display:inline-flex;align-items:center;gap:6px}
+.chip.on{background:var(--blue-bg);border-color:transparent;color:var(--blue);font-weight:500}
+.search{flex:1 1 180px;min-width:0;display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:8px;height:32px;padding:0 10px;background:var(--surface)}
+.search input{border:0;background:none;color:var(--fg);font:inherit;flex:1;min-width:0;outline:none}
+.search svg{width:18px;height:18px;fill:var(--fg-2);flex:none}
+
+/* reviews */
+.list{display:grid}
+.rev{padding:16px 0;border-bottom:1px solid var(--line);display:grid;gap:8px}
+.rev-head{display:flex;gap:12px;align-items:center}
+.ava{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:500;font-size:18px;flex:none}
+.who{min-width:0}
+.who .n{font-weight:500}
+.who .m{color:var(--fg-3);font-size:12px}
+.meta{display:flex;gap:8px;align-items:center;color:var(--fg-3);font-size:12px}
+.meta .new{background:var(--blue-bg);color:var(--blue);border-radius:4px;padding:0 6px;font-weight:500}
+.txt{white-space:pre-wrap;overflow-wrap:anywhere}
+.txt.clamp{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.more{background:none;border:0;padding:0;color:var(--blue);font-weight:500;justify-self:start}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:12px;color:var(--fg-2);background:var(--surface-2);border-radius:12px;padding:2px 10px}
+.actions{display:flex;gap:8px}
+.act{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:none;border-radius:16px;height:32px;padding:0 12px;color:var(--fg-2)}
+.act svg{width:16px;height:16px;fill:currentColor}
+.act.on{color:var(--blue);border-color:var(--blue);background:var(--blue-bg)}
+.reply{margin-left:12px;padding:8px 0 0 12px;border-left:2px solid var(--line)}
+.reply .rh{font-weight:500;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.reply .rh span{color:var(--fg-3);font-weight:400;font-size:12px}
+.reply-form{display:grid;gap:8px;margin-left:12px}
+.reply-form textarea{min-height:64px}
+
+.empty{padding:40px 16px;text-align:center;color:var(--fg-2);display:grid;gap:12px;justify-items:center}
+.empty .big-stars svg{width:32px;height:32px}
+.note{font-size:12px;color:var(--fg-3);margin-top:16px;text-align:center}
+
+/* modal */
+.scrim{position:fixed;inset:0;background:var(--scrim);display:grid;place-items:center;z-index:50;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.dialog{background:var(--surface);border-radius:8px;box-shadow:var(--shadow);width:100%;max-width:520px;max-height:100%;overflow:auto;display:grid}
+.dlg-head{padding:20px 24px 8px;text-align:center}
+.dlg-head .t{font-size:22px;line-height:28px}
+.dlg-body{padding:8px 24px 16px;display:grid;gap:16px}
+.poster{display:flex;gap:12px;align-items:center}
+.poster input{border:0;border-bottom:1px solid var(--line);background:none;color:var(--fg);font:inherit;font-weight:500;padding:4px 0;min-width:0;flex:1}
+.poster input:focus{border-bottom-color:var(--blue);outline:none}
+.poster small{display:block;color:var(--fg-3);font-size:12px}
+.pick{display:grid;justify-items:center;gap:6px}
+.pick .row{display:flex;gap:6px}
+.pick button{background:none;border:0;padding:2px;border-radius:50%}
+.pick svg{width:40px;height:40px;transition:transform .1s}
+.pick button:hover svg{transform:scale(1.1)}
+.pick .lbl{color:var(--fg-2);min-height:20px}
+textarea{width:100%;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);font:inherit;padding:12px;resize:vertical;min-height:120px}
+textarea:focus{border-color:var(--blue);outline:none}
+.qtitle{font-weight:500;margin-bottom:8px}
+.qchips{display:flex;flex-wrap:wrap;gap:8px}
+.dlg-foot{display:flex;justify-content:flex-end;gap:8px;padding:12px 24px 20px;border-top:1px solid var(--line)}
+.btn-text{background:none;border:0;color:var(--blue);font-weight:500;height:36px;padding:0 16px;border-radius:4px}
+.btn-text:hover{background:var(--blue-bg)}
+.btn-fill{background:var(--blue);color:var(--surface);border:0;font-weight:500;height:36px;padding:0 24px;border-radius:4px}
+.btn-fill:disabled{background:var(--surface-2);color:var(--fg-3);cursor:default}
+.err{color:#d93025;font-size:13px}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:#323232;color:#fff;
+  padding:12px 20px;border-radius:4px;box-shadow:var(--shadow);z-index:60;max-width:calc(100% - 32px)}
+
+@media (max-width:480px){
+  .summary{grid-template-columns:1fr;gap:12px}
+  .score{display:flex;align-items:center;gap:12px;text-align:left;order:-1}
+  .score .big{font-size:44px;line-height:48px}
+  .dlg-head,.dlg-body,.dlg-foot{padding-left:16px;padding-right:16px}
+  .pick svg{width:36px;height:36px}
+}
+.pinrow{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--fg-2)}
+.pinrow input{width:110px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);font:inherit;padding:6px 10px;letter-spacing:.2em;text-align:center}
+.pinrow input:focus{border-color:var(--blue);outline:none}
+.owner-link{text-align:center;margin-top:24px}
+.owner-link button{background:none;border:0;color:var(--fg-3);font-size:12px;text-decoration:underline}
+.owner-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--blue-bg);color:var(--blue);border-radius:8px;padding:8px 12px;margin-bottom:16px;font-weight:500}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="place">
+    <div class="place-photo" aria-hidden="true">В</div>
+    <div style="min-width:0">
+      <h1>Тато Валєра</h1>
+      <div class="sub"><span class="num" id="hdrScore">–</span><span id="hdrStars" class="stars"></span><span id="hdrCount">(0)</span></div>
+      <div class="cat">Тато · Клуж-Напока</div>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Розділи">
+    <button class="tab" type="button" disabled>Огляд</button>
+    <button class="tab on" type="button" aria-current="page">Відгуки</button>
+    <button class="tab" type="button" disabled>Про тата</button>
+  </nav>
+
+  <section class="summary" aria-label="Підсумок оцінок">
+    <div class="bars" id="bars"></div>
+    <div class="score">
+      <div class="big" id="bigScore">0,0</div>
+      <div>
+        <div class="stars lg" id="bigStars"></div>
+        <div class="cnt" id="bigCount">0 відгуків</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="owner-bar" id="ownerBar" hidden><span>Режим тата: можна відповідати й приховувати відгуки</span><button class="btn-text" type="button" id="ownerExit">Вийти</button></div>
+  <div class="write-row">
+    <button class="btn-outline" type="button" id="writeBtn">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+      Написати відгук
+    </button>
+  </div>
+
+  <div class="toolbar">
+    <label class="search"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <input id="q" type="search" placeholder="Пошук у відгуках" aria-label="Пошук у відгуках"></label>
+  </div>
+  <div class="toolbar" role="group" aria-label="Сортування">
+    <button class="chip on" data-sort="rel" type="button">Найрелевантніші</button>
+    <button class="chip" data-sort="new" type="button">Найновіші</button>
+    <button class="chip" data-sort="high" type="button">Найвищі оцінки</button>
+    <button class="chip" data-sort="low" type="button">Найнижчі оцінки</button>
+  </div>
+
+  <div class="list" id="list"></div>
+  <p class="note" id="note"></p>
+  <p class="owner-link"><button type="button" id="ownerBtn">Я тато</button></p>
+</div>
+
+<div class="scrim" id="modal" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlgTitle">
+    <div class="dlg-head"><div class="t" id="dlgTitle">Тато Валєра</div></div>
+    <div class="dlg-body">
+      <div class="poster">
+        <div class="ava" id="myAva" style="background:#e8710a">Н</div>
+        <div style="flex:1;min-width:0">
+          <input id="author" maxlength="40" placeholder="Твоє ім'я" aria-label="Твоє ім'я">
+          <small>Відгук побачить тато</small>
+        </div>
+      </div>
+      <div class="pick">
+        <div class="row" id="pick" role="radiogroup" aria-label="Оцінка"></div>
+        <div class="lbl" id="pickLbl"></div>
+      </div>
+      <div>
+        <div class="qtitle">Що тобі сподобалося?</div>
+        <div class="qchips" id="tagPick"></div>
+      </div>
+      <textarea id="text" maxlength="2000" placeholder="Розкажи, як тобі з татом: що було класно, а що можна покращити"></textarea>
+      <label class="pinrow" id="pinRow"><span>PIN для публікації</span>
+        <input id="pin" type="password" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="••••"></label>
+      <div class="err" id="err" hidden></div>
+    </div>
+    <div class="dlg-foot">
+      <button class="btn-text" type="button" id="cancel">Скасувати</button>
+      <button class="btn-fill" type="button" id="post" disabled>Опублікувати</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+
+<script src="config.js"></script>
+<script>
+const API = window.REVIEWS_API;
+const STAR_PATH = 'M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z';
+const STAR = on => `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="${on?'var(--star)':'var(--star-off)'}" d="${STAR_PATH}"/></svg>`;
+let gid = 0;
+function starsHTML(v){
+  let s=''; for(let i=1;i<=5;i++){
+    if(v>=i-0.25) s+=STAR(true);
+    else if(v>=i-0.75){const id='g'+(gid++);
+      s+=`<svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="${id}"><stop offset="50%" stop-color="var(--star)"/><stop offset="50%" stop-color="var(--star-off)"/></linearGradient></defs><path fill="url(#${id})" d="${STAR_PATH}"/></svg>`;}
+    else s+=STAR(false);
+  } return s;
+}
+const LABELS=['','Жахливо','Погано','Нормально','Добре','Чудово'];
+const TAGS=['Грається зі мною','Смачно готує','Допомагає з уроками','Смішно жартує','Возить на волейбол','Купує подарунки','Не кричить','Дозволяє Fortnite'];
+const COLORS=['#e8710a','#1e8e3e','#d93025','#9334e6','#1a73e8','#c5221f','#188038','#b06000','#007b83'];
+const colorFor=n=>{let h=0;for(const c of n||'?')h=(h*31+c.charCodeAt(0))>>>0;return COLORS[h%COLORS.length]};
+const initial=n=>(n||'?').trim().charAt(0).toUpperCase()||'?';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function plural(n,a,b,c){const m10=n%10,m100=n%100;return m10===1&&m100!==11?a:(m10>=2&&m10<=4&&(m100<12||m100>14))?b:c}
+function ago(ts){
+  const d=(Date.now()-ts)/1000;
+  if(d<60) return 'щойно';
+  const m=Math.floor(d/60); if(m<60) return `${m} ${plural(m,'хвилину','хвилини','хвилин')} тому`;
+  const h=Math.floor(m/60); if(h<24) return `${h} ${plural(h,'годину','години','годин')} тому`;
+  const dd=Math.floor(h/24); if(dd<7) return dd===1?'вчора':`${dd} ${plural(dd,'день','дні','днів')} тому`;
+  const w=Math.floor(dd/7); if(dd<30) return `${w} ${plural(w,'тиждень','тижні','тижнів')} тому`;
+  const mo=Math.floor(dd/30); if(mo<12) return `${mo} ${plural(mo,'місяць','місяці','місяців')} тому`;
+  const y=Math.floor(dd/365); return `${y} ${plural(y,'рік','роки','років')} тому`;
+}
+const ls={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const ERRORS={bad_pin:'Неправильний PIN',locked:'Забагато невдалих спроб. Зачекай 10 хвилин.',not_configured:'PIN ще не налаштовано в скрипті',
+  bad_rating:'Постав оцінку зірочками',no_author:'Напиши своє ім\'я',busy:'Сервер зайнятий, спробуй ще раз',network:'Немає зв\'язку з сервером. Перевір інтернет.'};
+const errText=c=>ERRORS[c]||'Щось пішло не так. Спробуй ще раз.';
+
+let reviews=[], loaded=false, loadError=false, sort='rel', starFilter=0, query='', expanded=new Set(), replying=null;
+let ownerPin=ls.get('ownerPin',null);
+const liked=new Set(ls.get('liked',[]));
+
+/* ---------- API ---------- */
+async function apiList(){
+  const r=await fetch(API+'?action=list',{cache:'no-store'});
+  const j=await r.json(); if(!j.ok) throw new Error(j.error); return j.reviews;
+}
+async function apiPost(body){
+  let j;
+  try{
+    // text/plain — без preflight-запиту, Apps Script приймає такий POST
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});
+    j=await r.json();
+  }catch(e){throw new Error('network')}
+  if(!j.ok) throw new Error(j.error||'error'); return j;
+}
+async function refresh(){
+  try{reviews=await apiList();loaded=true;loadError=false}
+  catch(e){loadError=!loaded}
+  if(!replying) render();
+}
+
+/* ---------- render ---------- */
+function render(){
+  const n=reviews.length;
+  const avg=n?reviews.reduce((s,r)=>s+r.rating,0)/n:0;
+  const avgTxt=avg.toFixed(1).replace('.',',');
+  document.getElementById('hdrScore').textContent=n?avgTxt:'–';
+  document.getElementById('hdrStars').innerHTML=starsHTML(avg);
+  document.getElementById('hdrCount').textContent=`(${n})`;
+  document.getElementById('bigScore').textContent=avgTxt;
+  document.getElementById('bigStars').innerHTML=starsHTML(avg);
+  document.getElementById('bigCount').textContent=`${n} ${plural(n,'відгук','відгуки','відгуків')}`;
+  const counts=[0,0,0,0,0,0]; reviews.forEach(r=>counts[r.rating]++);
+  const max=Math.max(1,...counts.slice(1));
+  document.getElementById('bars').innerHTML=[5,4,3,2,1].map(s=>
+    `<button class="barrow" type="button" data-star="${s}" aria-label="Показати ${s}-зіркові: ${counts[s]}" style="${starFilter&&starFilter!==s?'opacity:.45':''}">
+      <span>${s}</span><span class="bartrack"><span class="barfill" style="width:${counts[s]/max*100}%"></span></span></button>`).join('');
+  document.getElementById('ownerBar').hidden=!ownerPin;
+  document.getElementById('ownerBtn').hidden=!!ownerPin;
+
+  let list=reviews.slice();
+  if(starFilter) list=list.filter(r=>r.rating===starFilter);
+  if(query){const q=query.toLowerCase();list=list.filter(r=>(r.text||'').toLowerCase().includes(q)||(r.author||'').toLowerCase().includes(q)||(r.tags||[]).some(t=>t.toLowerCase().includes(q)))}
+  const score=r=>(r.helpful||0)*3+(r.text||'').length/80+(r.reply?2:0)-(Date.now()-r.createdAt)/864e5/7;
+  const by={new:(a,b)=>b.createdAt-a.createdAt,high:(a,b)=>b.rating-a.rating||b.createdAt-a.createdAt,low:(a,b)=>a.rating-b.rating||b.createdAt-a.createdAt,rel:(a,b)=>score(b)-score(a)};
+  list.sort(by[sort]);
+
+  const el=document.getElementById('list');
+  if(!API||API.startsWith('PASTE')){el.innerHTML=`<div class="empty"><b>Сторінку ще не підключено до таблиці</b><div>Встав адресу Apps Script у файл config.js</div></div>`;return}
+  if(loadError){el.innerHTML=`<div class="empty">Не вдалося завантажити відгуки.<button class="btn-outline" type="button" data-retry>Спробувати ще раз</button></div>`;return}
+  if(!loaded){el.innerHTML=`<div class="empty">Завантажую відгуки…</div>`;return}
+  if(!n){el.innerHTML=`<div class="empty"><div class="stars big-stars">${starsHTML(0)}</div>
+    <div><b>Ще немає відгуків</b><br>Стань першим, хто оцінить тата</div>
+    <button class="btn-outline" type="button" data-write>Написати відгук</button></div>`;return}
+  if(!list.length){el.innerHTML=`<div class="empty">Нічого не знайдено за цим фільтром</div>`;return}
+
+  el.innerHTML=list.map(r=>{
+    const long=(r.text||'').length>260 && !expanded.has(r.id);
+    const authorCount=reviews.filter(x=>x.author===r.author).length;
+    return `<article class="rev">
+      <div class="rev-head">
+        <div class="ava" style="background:${colorFor(r.author)}">${esc(initial(r.author))}</div>
+        <div class="who"><div class="n">${esc(r.author||'Анонім')}</div>
+          <div class="m">${authorCount} ${plural(authorCount,'відгук','відгуки','відгуків')}</div></div>
+      </div>
+      <div class="meta"><span class="stars" aria-label="${r.rating} з 5">${starsHTML(r.rating)}</span><span>${ago(r.createdAt)}</span>${Date.now()-r.createdAt<864e5?'<span class="new">Новий</span>':''}</div>
+      ${r.tags&&r.tags.length?`<div class="tags">${r.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>`:''}
+      ${r.text?`<div class="txt ${long?'clamp':''}">${esc(r.text)}</div>${long?`<button class="more" type="button" data-more="${esc(r.id)}">Більше</button>`:''}`:''}
+      <div class="actions">
+        <button class="act ${liked.has(r.id)?'on':''}" type="button" data-like="${esc(r.id)}" aria-pressed="${liked.has(r.id)}">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
+          ${r.helpful?r.helpful:'Корисно'}</button>
+        ${ownerPin&&!r.reply&&replying!==r.id?`<button class="act" type="button" data-reply="${esc(r.id)}">Відповісти</button>`:''}
+        ${ownerPin?`<button class="act" type="button" data-hide="${esc(r.id)}">Приховати</button>`:''}
+      </div>
+      ${r.reply?`<div class="reply"><div class="rh">Відповідь тата <span>${ago(r.replyAt||r.createdAt)}</span></div><div class="txt">${esc(r.reply)}</div></div>`:''}
+      ${replying===r.id?`<div class="reply-form"><textarea id="replyText" placeholder="Відповідь тата" aria-label="Відповідь"></textarea>
+        <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn-text" type="button" data-reply-cancel>Скасувати</button><button class="btn-fill" type="button" data-reply-send="${esc(r.id)}">Відповісти</button></div></div>`:''}
+    </article>`}).join('');
+}
+
+/* ---------- interactions ---------- */
+document.addEventListener('click',async e=>{
+  const t=e.target.closest('button'); if(!t) return;
+  if(t.dataset.sort){sort=t.dataset.sort;document.querySelectorAll('[data-sort]').forEach(b=>b.classList.toggle('on',b===t));render()}
+  else if(t.dataset.star){const s=+t.dataset.star;starFilter=starFilter===s?0:s;render()}
+  else if(t.dataset.more){expanded.add(t.dataset.more);render()}
+  else if(t.hasAttribute('data-retry')){loadError=false;render();refresh()}
+  else if(t.hasAttribute('data-write')||t.id==='writeBtn'){openModal()}
+  else if(t.dataset.like){
+    const id=t.dataset.like, r=reviews.find(x=>x.id===id); if(!r) return;
+    const on=!liked.has(id); on?liked.add(id):liked.delete(id); ls.set('liked',[...liked]);
+    r.helpful=Math.max(0,(r.helpful||0)+(on?1:-1)); render();
+    try{await apiPost({action:'like',id,delta:on?1:-1})}catch(err){toast('Не вдалося зберегти позначку')}
+  }
+  else if(t.dataset.reply){replying=t.dataset.reply;render();document.getElementById('replyText')?.focus()}
+  else if(t.hasAttribute('data-reply-cancel')){replying=null;render()}
+  else if(t.dataset.replySend){
+    const txt=document.getElementById('replyText').value.trim(); if(!txt) return;
+    t.disabled=true;
+    try{await apiPost({action:'reply',id:t.dataset.replySend,text:txt,pin:ownerPin});replying=null;toast('Відповідь опубліковано');refresh()}
+    catch(err){t.disabled=false;toast(errText(err.message));if(err.message==='bad_pin'){ownerPin=null;ls.set('ownerPin',null);replying=null;render()}}
+  }
+  else if(t.dataset.hide){
+    const id=t.dataset.hide;
+    if(t.dataset.confirm!=='1'){t.dataset.confirm='1';t.lastChild.textContent='Точно приховати?';return}
+    try{await apiPost({action:'hide',id,pin:ownerPin});reviews=reviews.filter(r=>r.id!==id);render();toast('Відгук приховано (він лишився в таблиці)')}
+    catch(err){toast(errText(err.message))}
+  }
+  else if(t.id==='ownerBtn'){openOwner()}
+  else if(t.id==='ownerExit'){ownerPin=null;ls.set('ownerPin',null);replying=null;render()}
+});
+document.getElementById('q').addEventListener('input',e=>{query=e.target.value.trim();render()});
+
+/* ---------- composer ---------- */
+let rating=0, picked=new Set(), modalMode='review';
+const pickEl=document.getElementById('pick'), lblEl=document.getElementById('pickLbl');
+function paintPick(v){
+  pickEl.innerHTML=[1,2,3,4,5].map(i=>`<button type="button" role="radio" aria-checked="${rating===i}" aria-label="${i} — ${LABELS[i]}" data-v="${i}">${STAR(i<=v)}</button>`).join('');
+  lblEl.textContent=v?LABELS[v]:'';
+}
+pickEl.addEventListener('mouseover',e=>{const b=e.target.closest('[data-v]');if(b)paintPick(+b.dataset.v)});
+pickEl.addEventListener('mouseleave',()=>paintPick(rating));
+pickEl.addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;rating=+b.dataset.v;paintPick(rating);validate()});
+const tagEl=document.getElementById('tagPick');
+function paintTags(){tagEl.innerHTML=TAGS.map(t=>`<button type="button" class="chip ${picked.has(t)?'on':''}" data-tag="${esc(t)}" aria-pressed="${picked.has(t)}">${picked.has(t)?'✓ ':''}${esc(t)}</button>`).join('')}
+tagEl.addEventListener('click',e=>{const b=e.target.closest('[data-tag]');if(!b)return;const t=b.dataset.tag;picked.has(t)?picked.delete(t):picked.add(t);paintTags()});
+const authorEl=document.getElementById('author'), textEl=document.getElementById('text'), postEl=document.getElementById('post'), errEl=document.getElementById('err'), pinEl=document.getElementById('pin');
+authorEl.addEventListener('input',()=>{const a=document.getElementById('myAva');a.textContent=initial(authorEl.value||'Н');a.style.background=colorFor(authorEl.value||'Натан');ls.set('author',authorEl.value);validate()});
+pinEl.addEventListener('input',validate);
+const modal=document.getElementById('modal'), dlgBody=modal.querySelector('.dlg-body');
+function validate(){
+  postEl.disabled = modalMode==='owner' ? !pinEl.value.trim() : !(rating&&authorEl.value.trim()&&pinEl.value.trim());
+}
+function setModalMode(m){
+  modalMode=m;
+  dlgBody.querySelectorAll(':scope > :not(#pinRow):not(#err)').forEach(n=>n.hidden=(m==='owner'));
+  document.getElementById('dlgTitle').textContent=m==='owner'?'Вхід для тата':'Тато Валєра';
+  pinEl.previousElementSibling.textContent=m==='owner'?'PIN тата':'PIN для публікації';
+  postEl.textContent=m==='owner'?'Увійти':'Опублікувати';
+}
+function openModal(){
+  setModalMode('review');
+  rating=0;picked=new Set();textEl.value='';errEl.hidden=true;
+  authorEl.value=ls.get('author','');authorEl.dispatchEvent(new Event('input'));
+  pinEl.value=ls.get('kidPin','');
+  paintPick(0);paintTags();validate();
+  modal.hidden=false;
+  (authorEl.value?pickEl.querySelector('button'):authorEl).focus();
+}
+function openOwner(){
+  setModalMode('owner'); pinEl.value=''; errEl.hidden=true; validate(); modal.hidden=false; pinEl.focus();
+}
+function closeModal(){modal.hidden=true;document.getElementById('writeBtn').focus()}
+document.getElementById('cancel').onclick=closeModal;
+modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal.hidden)closeModal()});
+postEl.onclick=async()=>{
+  postEl.disabled=true; errEl.hidden=true;
+  const pin=pinEl.value.trim();
+  try{
+    if(modalMode==='owner'){
+      await apiPost({action:'checkOwner',pin});
+      ownerPin=pin; ls.set('ownerPin',pin); closeModal(); render(); toast('Режим тата увімкнено');
+    }else{
+      await apiPost({action:'add',author:authorEl.value.trim(),rating,text:textEl.value.trim(),tags:[...picked],pin});
+      ls.set('kidPin',pin); closeModal(); toast('Дякуємо! Відгук опубліковано'); refresh();
+    }
+  }catch(err){
+    errEl.textContent=errText(err.message); errEl.hidden=false;
+    if(err.message==='bad_pin'&&modalMode==='review') ls.set('kidPin',null);
+    validate();
+  }
+};
+
+let toastT; function toast(m){const t=document.getElementById('toast');t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,3000)}
+
+/* ---------- boot ---------- */
+render();
+if(API&&!API.startsWith('PASTE')){
+  refresh();
+  setInterval(()=>{if(document.visibilityState==='visible'&&modal.hidden)refresh()},30000);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh()});
+}
+</script>
+</body>
+</html>
