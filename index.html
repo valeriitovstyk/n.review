@@ -243,7 +243,7 @@ textarea:focus{border-color:var(--blue);outline:none}
 <div class="toast" id="toast" hidden></div>
 
 
-<script src="config.js?v=4"></script>
+<script src="config.js?v=5"></script>
 <script>
 const API = window.REVIEWS_API;
 const STAR_PATH = 'M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z';
@@ -399,12 +399,19 @@ document.getElementById('q').addEventListener('input',e=>{query=e.target.value.t
 /* ---------- composer ---------- */
 let rating=0, picked=new Set(), modalMode='review';
 const pickEl=document.getElementById('pick'), lblEl=document.getElementById('pickLbl');
+// Кнопки створюються один раз; при наведенні/тапі міняється лише колір —
+// інакше мобільні браузери «з'їдають» тап, бо елемент під пальцем зникає.
+pickEl.innerHTML=[1,2,3,4,5].map(i=>`<button type="button" role="radio" aria-checked="false" aria-label="${i} — ${LABELS[i]}" data-v="${i}">${STAR(false)}</button>`).join('');
 function paintPick(v){
-  pickEl.innerHTML=[1,2,3,4,5].map(i=>`<button type="button" role="radio" aria-checked="${rating===i}" aria-label="${i} — ${LABELS[i]}" data-v="${i}">${STAR(i<=v)}</button>`).join('');
+  pickEl.querySelectorAll('[data-v]').forEach(b=>{
+    const i=+b.dataset.v;
+    b.querySelector('path').setAttribute('fill',i<=v?'var(--star)':'var(--star-off)');
+    b.setAttribute('aria-checked',String(rating===i));
+  });
   lblEl.textContent=v?LABELS[v]:'';
 }
-pickEl.addEventListener('mouseover',e=>{const b=e.target.closest('[data-v]');if(b)paintPick(+b.dataset.v)});
-pickEl.addEventListener('mouseleave',()=>paintPick(rating));
+pickEl.addEventListener('pointerover',e=>{if(e.pointerType!=='mouse')return;const b=e.target.closest('[data-v]');if(b)paintPick(+b.dataset.v)});
+pickEl.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse')paintPick(rating)});
 pickEl.addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;rating=+b.dataset.v;paintPick(rating);errEl.hidden=true});
 const tagEl=document.getElementById('tagPick');
 function paintTags(){tagEl.innerHTML=TAGS.map(t=>`<button type="button" class="chip ${picked.has(t)?'on':''}" data-tag="${esc(t)}" aria-pressed="${picked.has(t)}">${picked.has(t)?'✓ ':''}${esc(t)}</button>`).join('')}
