@@ -116,8 +116,10 @@ button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px soli
 .dlg-head .t{font-size:22px;line-height:28px}
 .dlg-body{padding:8px 24px 16px;display:grid;gap:16px}
 .poster{display:flex;gap:12px;align-items:center}
-.poster input{border:0;border-bottom:1px solid var(--line);background:none;color:var(--fg);font:inherit;font-weight:500;padding:4px 0;min-width:0;flex:1}
-.poster input:focus{border-bottom-color:var(--blue);outline:none}
+.poster input{width:100%;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);font:inherit;font-weight:500;padding:8px 12px;min-width:0}
+.poster input:focus{border-color:var(--blue);outline:none}
+.poster small{margin-top:4px}
+.bad{border-color:#d93025!important}
 .poster small{display:block;color:var(--fg-3);font-size:12px}
 .pick{display:grid;justify-items:center;gap:6px}
 .pick .row{display:flex;gap:6px}
@@ -241,7 +243,7 @@ textarea:focus{border-color:var(--blue);outline:none}
 <div class="toast" id="toast" hidden></div>
 
 
-<script src="config.js?v=3"></script>
+<script src="config.js?v=4"></script>
 <script>
 const API = window.REVIEWS_API;
 const STAR_PATH = 'M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z';
@@ -403,7 +405,7 @@ function paintPick(v){
 }
 pickEl.addEventListener('mouseover',e=>{const b=e.target.closest('[data-v]');if(b)paintPick(+b.dataset.v)});
 pickEl.addEventListener('mouseleave',()=>paintPick(rating));
-pickEl.addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;rating=+b.dataset.v;paintPick(rating);validate()});
+pickEl.addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;rating=+b.dataset.v;paintPick(rating);errEl.hidden=true});
 const tagEl=document.getElementById('tagPick');
 function paintTags(){tagEl.innerHTML=TAGS.map(t=>`<button type="button" class="chip ${picked.has(t)?'on':''}" data-tag="${esc(t)}" aria-pressed="${picked.has(t)}">${picked.has(t)?'✓ ':''}${esc(t)}</button>`).join('')}
 tagEl.addEventListener('click',e=>{const b=e.target.closest('[data-tag]');if(!b)return;const t=b.dataset.tag;picked.has(t)?picked.delete(t):picked.add(t);paintTags()});
@@ -411,8 +413,13 @@ const authorEl=document.getElementById('author'), textEl=document.getElementById
 authorEl.addEventListener('input',()=>{const a=document.getElementById('myAva');a.textContent=initial(authorEl.value||'Н');a.style.background=colorFor(authorEl.value||'Натан');ls.set('author',authorEl.value);validate()});
 pinEl.addEventListener('input',validate);
 const modal=document.getElementById('modal'), dlgBody=modal.querySelector('.dlg-body');
-function validate(){
-  postEl.disabled = modalMode==='owner' ? !pinEl.value.trim() : !(rating&&authorEl.value.trim()&&pinEl.value.trim());
+function validate(){ postEl.disabled=false; errEl.hidden=true; authorEl.classList.remove('bad'); pinEl.classList.remove('bad'); }
+function missing(){
+  if(modalMode==='owner') return pinEl.value.trim()?null:['Введи PIN тата',pinEl];
+  if(!authorEl.value.trim()) return ['Напиши своє ім\'я',authorEl];
+  if(!rating) return ['Постав оцінку зірочками',null];
+  if(!pinEl.value.trim()) return ['Введи PIN для публікації',pinEl];
+  return null;
 }
 function setModalMode(m){
   modalMode=m;
@@ -438,7 +445,9 @@ document.getElementById('cancel').onclick=closeModal;
 modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal.hidden)closeModal()});
 postEl.onclick=async()=>{
-  postEl.disabled=true; errEl.hidden=true;
+  const m=missing();
+  if(m){errEl.textContent=m[0];errEl.hidden=false;if(m[1]){m[1].classList.add('bad');m[1].focus()}return}
+  postEl.disabled=true; postEl.textContent=modalMode==='owner'?'Перевіряю…':'Публікую…'; errEl.hidden=true;
   const pin=pinEl.value.trim();
   try{
     if(modalMode==='owner'){
@@ -451,7 +460,7 @@ postEl.onclick=async()=>{
   }catch(err){
     errEl.textContent=errText(err.message); errEl.hidden=false;
     if(err.message==='bad_pin'&&modalMode==='review') ls.set('kidPin',null);
-    validate();
+    postEl.disabled=false; postEl.textContent=modalMode==='owner'?'Увійти':'Опублікувати';
   }
 };
 
